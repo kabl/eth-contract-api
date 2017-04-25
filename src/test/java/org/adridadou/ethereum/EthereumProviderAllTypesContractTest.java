@@ -13,9 +13,12 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -28,6 +31,8 @@ public class EthereumProviderAllTypesContractTest {
     private final EthereumProxy bcProxy = new EthereumProxy(ethereumj, handler, inputTypeHandler, outputTypeHandler);
     private final EthAccount account = ethereumj.defaultAccount();
     private final EthereumFacade ethereum = new EthereumFacade(bcProxy, inputTypeHandler, outputTypeHandler, SwarmService.from(SwarmService.PUBLIC_HOST), SolidityCompiler.getInstance());
+
+
 
     @Before
     public void before() {
@@ -58,14 +63,22 @@ public class EthereumProviderAllTypesContractTest {
         proxy.setAddress(account.getAddress()).get();
         assertThat(proxy.getAddress(), is(account.getAddress()));
 
-
         proxy.setBool(true).get();
         assertTrue(proxy.getBool());
 
-        EthData data = EthData.of("ok".getBytes());
-        proxy.setBytes32("UUUU".getBytes()).get();
+        byte[] expectedArray = Arrays.copyOf("ABCD".getBytes(), 32);
+        proxy.setBytes32(expectedArray).get();
+
         byte[] actualData = proxy.getBytes32();
-        assertThat(actualData, is(data));
+        assertThat(actualData, equalTo(expectedArray));
+
+        int[] intArr = new int[10];
+        intArr[0] = 1;
+        intArr[1] = Integer.MAX_VALUE;
+        proxy.setUint8Array(intArr).get();
+        int[] actualIntArr = proxy.getUint8Array();
+        assertThat(actualIntArr, equalTo(intArr));
+
     }
 
     private interface AllTypesContract {
@@ -86,5 +99,8 @@ public class EthereumProviderAllTypesContractTest {
 
         CompletableFuture<Void> setBytes32(byte[] data);
         byte[] getBytes32();
+
+        CompletableFuture<Void> setUint8Array(int[] data);
+        int[] getUint8Array();
     }
 }

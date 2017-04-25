@@ -6,6 +6,7 @@ contract allTypesContract {
     int m_int;
     address m_address;
     bool m_bool;
+    uint8[10] m_uint8Array;
 
     function setString(string _data){
         m_string = _data;
@@ -53,6 +54,15 @@ contract allTypesContract {
 
     function getBool() constant returns (bool _data) {
         _data = m_bool;
+    }
+
+    function setUint8Array(uint8[10] _uint8Array){
+        m_uint8Array = _uint8Array;
+    }
+
+    function getUint8Array() constant returns (uint8[10])  // NOTE 3 see below
+    {
+        return m_uint8Array;
     }
 
     // Super unsafe but ok.

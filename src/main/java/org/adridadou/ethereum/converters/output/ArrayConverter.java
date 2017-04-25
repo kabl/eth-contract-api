@@ -29,6 +29,10 @@ public class ArrayConverter implements OutputTypeConverter {
             return obj;
         }
 
+        if(obj instanceof  Byte[]){
+            return obj;
+        }
+
         Object[] arr = (Object[]) obj;
 
         return handler.getConverter(getGenericType(genericType))
